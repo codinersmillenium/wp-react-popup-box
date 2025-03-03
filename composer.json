@@ -1,0 +1,20 @@
+{
+    "name": "popupbox/popup-box",
+    "description": "Custom Popup Plugin with React",
+    "type": "wordpress-plugin",
+    "require": {
+      "php": ">=8.1.4",
+        "firebase/php-jwt": "^6.11"
+    },
+    "autoload": {
+      "psr-4": {
+        "PopupBox\\": "app/"
+      },
+      "files": [
+        "app/Helper.php"
+      ]
+    },
+    "scripts": {
+      "secret-key": "php config/secret_key.php"
+    }
+  }

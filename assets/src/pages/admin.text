@@ -1,0 +1,116 @@
+import React, { useEffect, useState } from 'react';
+import { createRoot } from 'react-dom/client';
+
+const PopupAdminTable = () => {
+    const [popups, setPopups] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState('');
+    const [bulkAction, setBulkAction] = useState('');
+    const [selected, setSelected] = useState([]);
+
+    useEffect(() => {
+        fetch(`${ajaxData.ajax_url}?action=get_popups&nonce=${ajaxData.nonce}`)
+            .then(res => res.json())
+            .then(data => {
+                setPopups(data?.data);
+                setLoading(false);
+            });
+    }, []);
+
+    const handleBulkAction = () => {
+        selected.forEach(id => {
+            if (bulkAction === 'trash') trashPopup(id);
+            if (bulkAction === 'delete') deletePopup(id);
+            if (bulkAction === 'restore') restorePopup(id);
+        });
+        setSelected([]);
+    };
+
+    const trashPopup = (id) => {
+        fetch(`${ajaxData.ajax_url}?action=trash_popup&nonce=${ajaxData.nonce}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        }).then(() => setPopups(popups.map(p => p.ID === id ? { ...p, status: 'trash' } : p)));
+    };
+
+    const restorePopup = (id) => {
+        fetch(`${ajaxData.ajax_url}?action=restore_popup&nonce=${ajaxData.nonce}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        }).then(() => setPopups(popups.map(p => p.ID === id ? { ...p, status: 'publish' } : p)));
+    };
+
+    const deletePopup = (id) => {
+        fetch(`${ajaxData.ajax_url}?action=delete_popup&nonce=${ajaxData.nonce}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        }).then(() => setPopups(popups.filter(p => p.ID !== id)));
+    };
+
+    const filteredPopups = Array.isArray(popups) ? popups.filter(p => p.post_title.toLowerCase().includes(search.toLowerCase())) : [];
+
+    return (
+        <div className="wrap">
+            <h1>Custom Popups</h1>
+            <input type="text" placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} />
+            <select value={bulkAction} onChange={e => setBulkAction(e.target.value)}>
+                <option value="">Bulk Actions</option>
+                <option value="trash">Move to Trash</option>
+                <option value="restore">Restore</option>
+                <option value="delete">Delete Permanently</option>
+            </select>
+            <button className="button" onClick={handleBulkAction}>Apply</button>
+
+            {loading ? <p>Loading...</p> : (
+                <table className="wp-list-table widefat striped">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" onChange={(e) => {
+                                if (e.target.checked) {
+                                    setSelected(filteredPopups.map(p => p.ID));
+                                } else {
+                                    setSelected([]);
+                                }
+                            }} /></th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredPopups.map((popup) => (
+                            <tr key={popup.ID} className={popup.status === 'trash' ? 'trash' : ''}>
+                                <td>
+                                    <input type="checkbox" checked={selected.includes(popup.ID)}
+                                        onChange={() => setSelected(prev =>
+                                            prev.includes(popup.ID) ? prev.filter(id => id !== popup.ID) : [...prev, popup.ID]
+                                        )} />
+                                </td>
+                                <td>{popup.post_title}</td>
+                                <td>{popup.status}</td>
+                                <td>
+                                    {popup.status !== 'trash' && (
+                                        <button className="button" onClick={() => trashPopup(popup.ID)}>Trash</button>
+                                    )}
+                                    {popup.status === 'trash' && (
+                                        <button className="button" onClick={() => restorePopup(popup.ID)}>Restore</button>
+                                    )}
+                                    <button className="button button-danger" onClick={() => deletePopup(popup.ID)}>Delete</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
+        </div>
+    );
+};
+
+const container = document.getElementById('custom-popup-admin');
+if (container) {
+    const root = createRoot(container);
+    root.render(<PopupAdminTable />);
+}

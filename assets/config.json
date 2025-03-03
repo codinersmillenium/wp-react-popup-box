@@ -1,0 +1,11 @@
+{
+    "name": "plugin",
+    "build": "./assets/src/.dist",
+    "dev": "./assets/src",
+    "style": "./assets/scss",
+    "output": {        
+        "frontend": "js/frontend.bundle.js",
+        "backend": "js/backend.bundle.js"
+    }
+} 
+ 
