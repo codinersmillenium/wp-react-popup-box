@@ -33,9 +33,9 @@ The Popup Box plugin is a WordPress plugin built using React.js to create and ma
 - Activate the plugin in WordPress
 
 ## 📝 Documentations
-- [DOCS.md](https://github.com/codinersmillenium/react-popup-box/blob/main/docs/DOCS.md)
-- [README.md](https://github.com/codinersmillenium/react-popup-box/blob/main/README.md)
-- [API](https://github.com/codinersmillenium/react-popup-box/blob/main/docs/DOCS_API.json)
+- [DOCS.md](https://github.com/codinersmillenium/wp-react-popup-box/blob/main/docs/DOCS.md)
+- [README.md](https://github.com/codinersmillenium/wp-react-popup-box/blob/main/README.md)
+- [API](https://github.com/codinersmillenium/wp-react-popup-box/blob/main/docs/DOCS_API.json)
 
 ## 🎉 Credits
 
